@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/FoundIt.Api/FoundIt.Api.csproj" />
+  <Project Path="tests/FoundIt.Api.Tests/FoundIt.Api.Tests.csproj" />
+</Solution>
