@@ -9,7 +9,7 @@ public sealed class Category
     public required string Description { get; set; }
     public IReadOnlyCollection<Listing> Listings => _listings.AsReadOnly();
 
-    internal void AddListing(Listing listing)
+    public void AddListing(Listing listing)
     {
         ArgumentNullException.ThrowIfNull(listing);
         if (listing.CategoryId != Id)

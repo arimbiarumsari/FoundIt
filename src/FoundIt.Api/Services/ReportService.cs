@@ -2,6 +2,7 @@ using FoundIt.Api.Domain.Entities;
 using FoundIt.Api.Domain.Enums;
 using FoundIt.Api.DTOs.Reports;
 using FoundIt.Api.Repositories;
+using System.ComponentModel.DataAnnotations;
 
 namespace FoundIt.Api.Services;
 
@@ -26,6 +27,16 @@ public sealed class ReportService(IReportRepository reports)
         if (!Enum.IsDefined(request.Type))
         {
             throw new ArgumentException("Report type must be Lost or Found.", nameof(request));
+        }
+
+        var validationResults = new List<ValidationResult>();
+        if (!Validator.TryValidateObject(
+                request,
+                new ValidationContext(request),
+                validationResults,
+                validateAllProperties: true))
+        {
+            throw new ArgumentException(validationResults[0].ErrorMessage, nameof(request));
         }
 
         if (request.IncidentDate > DateOnly.FromDateTime(nowUtc.UtcDateTime.AddDays(1)))

@@ -36,3 +36,28 @@ Report 1 ------ 0..1 Listing
 Category 1 ---- 0..* Listing
 Admin --------- verifies User and Report
 ```
+
+## Aplikasi Desktop Windows Forms
+
+FoundIt dikembangkan sebagai aplikasi desktop C# menggunakan Windows Forms,
+sesuai pilihan framework pada Modul 1 Junior Project. Project antarmuka terdapat
+pada folder `src/FoundIt.Desktop` dan menyediakan:
+
+- halaman login dan registrasi;
+- pencarian listing publik;
+- formulir laporan barang hilang atau ditemukan;
+- daftar laporan milik pengguna; dan
+- halaman review laporan khusus administrator.
+
+Penyimpanan saat ini masih menggunakan in-memory store sehingga data akan
+direset ketika aplikasi ditutup. Password diproses menggunakan PBKDF2 dan tidak
+disimpan sebagai teks biasa. Untuk membuat akun admin saat menjalankan aplikasi,
+atur environment variable `FOUNDIT_ADMIN_PASSWORD`. Email admin adalah
+`admin@foundit.local`.
+
+Jalankan project pada Windows menggunakan Visual Studio atau perintah:
+
+```powershell
+$env:FOUNDIT_ADMIN_PASSWORD = "GantiDenganPasswordAman1"
+dotnet run --project src/FoundIt.Desktop
+```
