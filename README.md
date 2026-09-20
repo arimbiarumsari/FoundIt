@@ -11,4 +11,5 @@ Anggota 2: Aston Hugo - 24/538303/TK/59700
 <img width="260" height="1280" alt="ClassDiagram_Junpro" src="https://github.com/user-attachments/assets/16f9b455-4ebb-46fa-9f94-334a04142e63" />
 
 ## ERD
-<img width="1012" height="1152" alt="ERD FoundIT" src="https://github.com/user-attachments/assets/2d071d8e-3c79-4d43-a674-3352b865d1a5" />
+<img width="826" height="482" alt="ERD_FoundIt" src="https://github.com/user-attachments/assets/bff4ccce-167c-4ac6-8e21-1d1237bfb5ee" />
+
