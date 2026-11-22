@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace FoundIt.Desktop.Security;
+namespace FoundIt.Infrastructure.Security;
 
 internal static class PasswordHasher
 {
@@ -20,10 +20,7 @@ internal static class PasswordHasher
     public static bool Verify(string password, string encodedHash)
     {
         var parts = encodedHash.Split('.');
-        if (parts.Length != 3 || !int.TryParse(parts[0], out var iterations))
-        {
-            return false;
-        }
+        if (parts.Length != 3 || !int.TryParse(parts[0], out var iterations)) return false;
 
         try
         {

@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/FoundIt.Api/FoundIt.Api.csproj" />
+    <ProjectReference Include="../../src/FoundIt.Infrastructure/FoundIt.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

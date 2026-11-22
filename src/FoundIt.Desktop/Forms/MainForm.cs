@@ -1,13 +1,13 @@
 using FoundIt.Api.Domain.Entities;
 using FoundIt.Api.Domain.Enums;
 using FoundIt.Api.DTOs.Reports;
-using FoundIt.Desktop.Data;
+using FoundIt.Infrastructure.Data;
 
 namespace FoundIt.Desktop.Forms;
 
 public sealed class MainForm : Form
 {
-    private readonly InMemoryAppStore _store;
+    private readonly FoundItDatabase _store;
     private readonly User _currentUser;
     private readonly DataGridView _listingGrid = UiTheme.Grid();
     private readonly DataGridView _myReportsGrid = UiTheme.Grid();
@@ -21,7 +21,7 @@ public sealed class MainForm : Form
     private readonly DateTimePicker _incidentDate = new() { Width = 360, MaxDate = DateTime.Today.AddDays(1) };
     private readonly TextBox _rejectionReason = new() { Width = 300, PlaceholderText = "Alasan penolakan" };
 
-    public MainForm(InMemoryAppStore store, User currentUser)
+    public MainForm(FoundItDatabase store, User currentUser)
     {
         _store = store;
         _currentUser = currentUser;

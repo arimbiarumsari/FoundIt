@@ -1,14 +1,14 @@
-using FoundIt.Desktop.Data;
+using FoundIt.Infrastructure.Data;
 
 namespace FoundIt.Desktop.Forms;
 
 public sealed class LoginForm : Form
 {
-    private readonly InMemoryAppStore _store;
+    private readonly FoundItDatabase _store;
     private readonly TextBox _email = new() { Width = 300 };
     private readonly TextBox _password = new() { Width = 300, UseSystemPasswordChar = true };
 
-    public LoginForm(InMemoryAppStore store)
+    public LoginForm(FoundItDatabase store)
     {
         _store = store;
         Text = "FoundIt - Login";

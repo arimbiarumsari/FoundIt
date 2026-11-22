@@ -5,4 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>FoundIt.Domain</AssemblyName>
   </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="FoundIt.Infrastructure" />
+  </ItemGroup>
 </Project>

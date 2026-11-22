@@ -9,5 +9,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../FoundIt.Api/FoundIt.Api.csproj" />
+    <ProjectReference Include="../FoundIt.Infrastructure/FoundIt.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

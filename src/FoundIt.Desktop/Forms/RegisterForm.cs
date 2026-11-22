@@ -1,15 +1,15 @@
-using FoundIt.Desktop.Data;
+using FoundIt.Infrastructure.Data;
 
 namespace FoundIt.Desktop.Forms;
 
 public sealed class RegisterForm : Form
 {
-    private readonly InMemoryAppStore _store;
+    private readonly FoundItDatabase _store;
     private readonly TextBox _name = new() { Width = 320 };
     private readonly TextBox _email = new() { Width = 320 };
     private readonly TextBox _password = new() { Width = 320, UseSystemPasswordChar = true };
 
-    public RegisterForm(InMemoryAppStore store)
+    public RegisterForm(FoundItDatabase store)
     {
         _store = store;
         Text = "FoundIt - Registrasi";

@@ -1,5 +1,5 @@
-using FoundIt.Desktop.Data;
 using FoundIt.Desktop.Forms;
+using FoundIt.Infrastructure.Data;
 
 namespace FoundIt.Desktop;
 
@@ -9,7 +9,7 @@ internal static class Program
     private static void Main()
     {
         ApplicationConfiguration.Initialize();
-        var store = new InMemoryAppStore();
+        using var store = new FoundItDatabase();
         Application.Run(new LoginForm(store));
     }
 }

@@ -49,8 +49,10 @@ pada folder `src/FoundIt.Desktop` dan menyediakan:
 - daftar laporan milik pengguna; dan
 - halaman review laporan khusus administrator.
 
-Penyimpanan saat ini masih menggunakan in-memory store sehingga data akan
-direset ketika aplikasi ditutup. Password diproses menggunakan PBKDF2 dan tidak
+Data aplikasi disimpan secara persisten menggunakan **LiteDB**, yaitu database
+NoSQL embedded berbentuk satu file. Database berisi collection `users`,
+`categories`, `reports`, dan `listings`, serta disimpan pada folder Local AppData
+pengguna di `FoundIt/foundit.db`. Password diproses menggunakan PBKDF2 dan tidak
 disimpan sebagai teks biasa. Untuk membuat akun admin saat menjalankan aplikasi,
 atur environment variable `FOUNDIT_ADMIN_PASSWORD`. Email admin adalah
 `admin@foundit.local`.
