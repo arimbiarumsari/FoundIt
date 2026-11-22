@@ -1,0 +1,17 @@
+# Visual Studio / build
+.vs/
+.idea/
+bin/
+obj/
+*.user
+*.suo
+TestResults/
+
+# Hasil publish (exe diunggah lewat GitHub Releases, bukan dicommit)
+publish/
+*.zip
+
+# Rahasia lokal
+appsettings.Development.json
+appsettings.Local.json
+connection.txt

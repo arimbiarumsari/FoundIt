@@ -1,0 +1,26 @@
+@baseUrl = http://localhost:5253
+
+### Daftar akun
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{ "name": "Budi", "email": "budi@example.com", "password": "Passw0rd1" }
+
+### Kirim laporan (Basic base64 dari budi@example.com:Passw0rd1)
+POST {{baseUrl}}/api/reports
+Content-Type: application/json
+Authorization: Basic YnVkaUBleGFtcGxlLmNvbTpQYXNzdzByZDE=
+
+{
+  "categoryId": "e359ad8a-206f-4840-a730-e102ba29e5cf",
+  "type": "Lost",
+  "title": "Dompet coklat",
+  "description": "Dompet coklat berisi KTM dan uang tunai.",
+  "location": "Kantin Teknik",
+  "incidentDate": "2026-11-20",
+  "imageUrl": null
+}
+
+### Laporan saya
+GET {{baseUrl}}/api/reports/mine
+Authorization: Basic YnVkaUBleGFtcGxlLmNvbTpQYXNzdzByZDE=
