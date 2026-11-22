@@ -153,7 +153,7 @@ dotnet publish src\FoundIt.Desktop -c Release -r win-x64 --self-contained true -
 dotnet publish src\FoundIt.WebApi  -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish\FoundIt-WebApi
 ```
 
-Detail lebih lanjut ada di [docs/CARA_MENJALANKAN.md](CARA_MENJALANKAN.md).
+Detail lebih lanjut ada di [CARA_MENJALANKAN.md](docs/CARA_MENJALANKAN.md).
 
 ## Keterbatasan yang Diketahui
 
