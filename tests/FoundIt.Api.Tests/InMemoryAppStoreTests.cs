@@ -8,6 +8,53 @@ namespace FoundIt.Api.Tests.Data;
 public sealed class InMemoryAppStoreTests {
     private const string ValidPassword = "Passw0rd1";
 
+    [Theory]
+    [InlineData(null, "user@example.test", "Passw0rd1", "Nama wajib diisi.")]
+    [InlineData("Budi", null, "Passw0rd1", "Email wajib diisi.")]
+    [InlineData("Budi", "user@example.test", null, "Password wajib diisi.")]
+    [InlineData("   ", "user@example.test", "Passw0rd1", "Nama wajib diisi.")]
+    [InlineData("Budi", "   ", "Passw0rd1", "Email wajib diisi.")]
+    [InlineData("Budi", "user@example.test", "   ", "Password wajib diisi.")]
+    public void Register_MissingField_ReturnsFriendlyValidation(
+        string? name, string? email, string? password, string expected)
+    {
+        var store = new InMemoryAppStore();
+        var error = Assert.Throws<ArgumentException>(() => store.Register(name, email, password));
+        Assert.Equal(expected, error.Message);
+    }
+
+    [Theory]
+    [InlineData(ListingStatus.Resolved)]
+    [InlineData(ListingStatus.Archived)]
+    [InlineData(ListingStatus.Deleted)]
+    public void GetPublicListing_HidesInactiveListing(ListingStatus status)
+    {
+        var store = new InMemoryAppStore();
+        var listing = store.SearchListings(null).First();
+        Assert.Same(listing, store.GetPublicListing(listing.Id));
+
+        listing.UpdateStatus(status, DateTimeOffset.UtcNow);
+
+        Assert.Null(store.GetPublicListing(listing.Id));
+        Assert.DoesNotContain(store.SearchListings(null), item => item.Id == listing.Id);
+        Assert.Same(listing, store.GetListing(listing.Id)); // Admin can still manage it.
+    }
+
+    [Fact]
+    public async Task SubmitReport_UnknownCategory_DoesNotSaveReport()
+    {
+        var store = new InMemoryAppStore();
+        var user = store.Register("Budi", "user@example.test", ValidPassword);
+        var request = new CreateReportRequest(Guid.NewGuid(), ReportType.Lost,
+            "Dompet coklat", "Dompet coklat berisi kartu mahasiswa.", "Kantin Teknik",
+            DateOnly.FromDateTime(DateTime.UtcNow), null);
+
+        var error = await Assert.ThrowsAsync<ArgumentException>(() => store.SubmitReportAsync(user, request));
+
+        Assert.Equal("Kategori tidak ditemukan. Pilih kategori yang tersedia.", error.Message);
+        Assert.Empty(store.GetReportsFor(user));
+    }
+
     private static (InMemoryAppStore Store, Admin Admin) NewStoreWithAdmin() {
         Environment.SetEnvironmentVariable("FOUNDIT_ADMIN_PASSWORD", "Admin12345");
         var store = new InMemoryAppStore();

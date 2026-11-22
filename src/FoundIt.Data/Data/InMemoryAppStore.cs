@@ -40,8 +40,15 @@ public sealed class InMemoryAppStore
     public IReadOnlyList<Category> Categories => _categories;
     public IReadOnlyList<Listing> Listings => _listings;
 
-    public User Register(string name, string email, string password)
+    public User Register(string? name, string? email, string? password)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Nama wajib diisi.");
+        if (string.IsNullOrWhiteSpace(email))
+            throw new ArgumentException("Email wajib diisi.");
+        if (string.IsNullOrWhiteSpace(password))
+            throw new ArgumentException("Password wajib diisi.");
+
         name = name.Trim();
         email = email.Trim().ToLowerInvariant();
 
@@ -95,6 +102,9 @@ public sealed class InMemoryAppStore
         CreateReportRequest request,
         CancellationToken cancellationToken = default)
     {
+        if (!_categories.Any(category => category.Id == request.CategoryId))
+            throw new ArgumentException("Kategori tidak ditemukan. Pilih kategori yang tersedia.");
+
         var report = await _reportService.CreateAsync(
             user.Id.ToString(), request, DateTimeOffset.UtcNow, cancellationToken);
         user.SubmitReport(report);
@@ -122,6 +132,11 @@ public sealed class InMemoryAppStore
         _listings.OrderByDescending(listing => listing.PublishedAtUtc);
 
     public Listing? GetListing(Guid id) => _listings.SingleOrDefault(listing => listing.Id == id);
+
+    // Endpoint publik mengikuti aturan visibilitas pencarian.
+    public Listing? GetPublicListing(Guid id) =>
+        _listings.SingleOrDefault(listing => listing.Id == id &&
+            listing.Status == ListingStatus.Active && listing.Report.Status == ReportStatus.Approved);
 
     public Report? GetReport(Guid id) => _reports.SingleOrDefault(report => report.Id == id);
 

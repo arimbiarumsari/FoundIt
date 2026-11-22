@@ -2,7 +2,7 @@ using FoundIt.Api.Domain.Entities;
 using FoundIt.Api.Domain.Enums;
 using FoundIt.Api.DTOs.Reports;
 using FoundIt.Data;
-using System.Reflection;
+using Microsoft.OpenApi;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -11,7 +11,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureHttpJsonOptions(o =>
     o.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "basic",
+        Description = "Masukkan email dan password akun FoundIt."
+    });
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("basic", document)] = []
+    });
+});
 
 var app = builder.Build();
 app.UseSwagger();
@@ -27,7 +39,7 @@ app.MapGet("/api/listings", (string? keyword) =>
    .WithSummary("Cari listing aktif (opsional ?keyword=)");
 
 app.MapGet("/api/listings/{id:guid}", (Guid id) =>
-    store.GetListing(id) is { } listing ? Results.Ok(ToDto(listing)) : Results.NotFound())
+    store.GetPublicListing(id) is { } listing ? Results.Ok(ToDto(listing)) : Results.NotFound())
    .WithSummary("Detail satu listing");
 
 app.MapGet("/api/categories", () =>
@@ -83,7 +95,7 @@ app.MapGet("/api/reports/mine", (HttpRequest http) => {
 }).WithSummary("Laporan milik saya (perlu Basic Auth)");
 
 app.MapGet("/api/listings/{id:guid}/image", (Guid id) => {
-    var data = store.GetListing(id)?.ImageData;
+    var data = store.GetPublicListing(id)?.ImageData;
     if (data is not { Length: > 0 }) return Results.NotFound();
     return Results.File(data, data[0] == 0x89 ? "image/png" : "image/jpeg");
 }).WithSummary("Foto listing");
@@ -126,6 +138,6 @@ object ToDto(Listing l) => new {
     l.PublishedAtUtc
 };
 
-public record RegisterRequest(string Name, string Email, string Password);
+public record RegisterRequest(string? Name, string? Email, string? Password);
 
 public partial class Program { }   // dibutuhkan untuk test API (opsional)

@@ -8,6 +8,20 @@ namespace FoundIt.Api.Tests.Services;
 public sealed class ReportServiceTests
 {
     [Fact]
+    public async Task CreateAsync_EmptyTitle_ReturnsIndonesianMessageWithoutParameterSuffix()
+    {
+        var repository = new InMemoryReportRepository();
+        var service = new ReportService(repository);
+        var request = new CreateReportRequest(Guid.NewGuid(), ReportType.Lost, "",
+            "Dompet coklat berisi kartu mahasiswa.", "Kantin Teknik",
+            new DateOnly(2026, 9, 5), null);
+
+        var error = await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(
+            "student-1", request, new DateTimeOffset(2026, 9, 6, 10, 0, 0, TimeSpan.Zero)));
+
+        Assert.Equal("Judul wajib diisi.", error.Message);
+    }
+    [Fact]
     public async Task CreateAsync_CreatesPendingReportOwnedByUser()
     {
         var repository = new InMemoryReportRepository();

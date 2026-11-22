@@ -16,17 +16,17 @@ public sealed class ReportService(IReportRepository reports)
     {
         if (string.IsNullOrWhiteSpace(userId))
         {
-            throw new ArgumentException("A user ID is required.", nameof(userId));
+            throw new ArgumentException("Pengguna wajib diisi.");
         }
 
         if (request.CategoryId == Guid.Empty)
         {
-            throw new ArgumentException("A category ID is required.", nameof(request));
+            throw new ArgumentException("Kategori wajib dipilih.");
         }
 
         if (!Enum.IsDefined(request.Type))
         {
-            throw new ArgumentException("Report type must be Lost or Found.", nameof(request));
+            throw new ArgumentException("Jenis laporan harus Lost atau Found.");
         }
 
         var validationResults = new List<ValidationResult>();
@@ -36,12 +36,12 @@ public sealed class ReportService(IReportRepository reports)
                 validationResults,
                 validateAllProperties: true))
         {
-            throw new ArgumentException(validationResults[0].ErrorMessage, nameof(request));
+            throw new ArgumentException(validationResults[0].ErrorMessage);
         }
 
         if (request.IncidentDate > DateOnly.FromDateTime(nowUtc.UtcDateTime.AddDays(1)))
         {
-            throw new ArgumentException("Incident date cannot be more than one day in the future.");
+            throw new ArgumentException("Tanggal kejadian tidak boleh lebih dari besok.");
         }
 
         const int maxImageBytes = 2 * 1024 * 1024;
