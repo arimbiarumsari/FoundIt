@@ -82,6 +82,12 @@ app.MapGet("/api/reports/mine", (HttpRequest http) => {
     }));
 }).WithSummary("Laporan milik saya (perlu Basic Auth)");
 
+app.MapGet("/api/listings/{id:guid}/image", (Guid id) => {
+    var data = store.GetListing(id)?.ImageData;
+    if (data is not { Length: > 0 }) return Results.NotFound();
+    return Results.File(data, data[0] == 0x89 ? "image/png" : "image/jpeg");
+}).WithSummary("Foto listing");
+
 app.Run();
 
 // ---------- Fungsi bantu ----------
@@ -108,6 +114,8 @@ User? Authenticate(HttpRequest request) {
 object ToDto(Listing l) => new {
     l.Id,
     l.Title,
+    ReportedBy = store.GetUserName(l.Report.UserId),
+    HasImage = l.ImageData is { Length: > 0 },
     l.Description,
     l.Location,
     l.IncidentDate,

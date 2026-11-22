@@ -39,4 +39,42 @@ public sealed class ReportServiceTests
         await Assert.ThrowsAsync<ArgumentException>(
             () => service.CreateAsync("student-1", request, now));
     }
+
+    [Fact]
+    public async Task CreateAsync_StoresValidImage() {
+        var service = new ReportService(new InMemoryReportRepository());
+        var png = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
+        var request = new CreateReportRequest(Guid.NewGuid(), ReportType.Lost, "Dompet coklat",
+            "Dompet coklat berisi KTM dan uang tunai.", "Kantin Teknik",
+            new DateOnly(2026, 9, 5), null, png);
+
+        var report = await service.CreateAsync("student-1", request,
+            new DateTimeOffset(2026, 9, 6, 10, 0, 0, TimeSpan.Zero));
+
+        Assert.Equal(png, report.ImageData);
+    }
+
+    [Fact]
+    public async Task CreateAsync_RejectsNonImageFile() {
+        var service = new ReportService(new InMemoryReportRepository());
+        var request = new CreateReportRequest(Guid.NewGuid(), ReportType.Lost, "Dompet coklat",
+            "Dompet coklat berisi KTM dan uang tunai.", "Kantin Teknik",
+            new DateOnly(2026, 9, 5), null, new byte[] { 1, 2, 3, 4, 5, 6 });
+
+        await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync("student-1", request,
+            new DateTimeOffset(2026, 9, 6, 10, 0, 0, TimeSpan.Zero)));
+    }
+
+    [Fact]
+    public async Task CreateAsync_RejectsImageLargerThan2Mb() {
+        var service = new ReportService(new InMemoryReportRepository());
+        var big = new byte[2 * 1024 * 1024 + 1];
+        big[0] = 0xFF; big[1] = 0xD8; big[2] = 0xFF; big[3] = 0xE0;
+        var request = new CreateReportRequest(Guid.NewGuid(), ReportType.Lost, "Dompet coklat",
+            "Dompet coklat berisi KTM dan uang tunai.", "Kantin Teknik",
+            new DateOnly(2026, 9, 5), null, big);
+
+        await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync("student-1", request,
+            new DateTimeOffset(2026, 9, 6, 10, 0, 0, TimeSpan.Zero)));
+    }
 }

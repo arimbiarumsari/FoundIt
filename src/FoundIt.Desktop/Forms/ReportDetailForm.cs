@@ -22,6 +22,7 @@ public sealed class ReportDetailForm : Form
         FormKit.AddRow(body, "Lokasi kejadian", report.Location, width);
         FormKit.AddRow(body, "Tanggal kejadian", report.IncidentDate.ToString("dd MMM yyyy"), width);
         FormKit.AddRow(body, "Deskripsi", report.Description, width);
+        FormKit.AddPicture(body, report.ImageData, width);
         FormKit.AddRow(body, "Status laporan", FormKit.ReportStatusText(report.Status), width);
         if (!string.IsNullOrWhiteSpace(report.RejectionReason))
         {

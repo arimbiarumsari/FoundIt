@@ -71,6 +71,7 @@ Isi **Email** dan **Password**, lalu klik **Masuk**. Di bagian atas jendela tamp
 1. Buka tab **Cari Listing**.
 2. Ketik nama barang atau lokasi pada kolom pencarian, lalu klik **Cari**. Kosongkan kolom untuk menampilkan semua listing aktif.
 3. Klik dua kali sebuah baris untuk melihat detail: jenis, kategori, lokasi, tanggal kejadian, deskripsi, status listing, dan waktu publikasi.
+4. Tabel listing menampilkan kolom **Pelapor**. Pada jendela detail tampil **foto barang** (jika ada) dan **Dilaporkan oleh**.
 
 ### 3.4 Melaporkan barang (tab *Buat Laporan*)
 
@@ -82,7 +83,9 @@ Isi **Email** dan **Password**, lalu klik **Masuk**. Di bagian atas jendela tamp
    - **Deskripsi**: minimal 10 karakter (ciri barang, isi, warna, dan sebagainya)
    - **Lokasi kejadian**
    - **Tanggal kejadian**: tidak boleh lebih dari besok
+   - **Foto barang (opsional)**: klik **Pilih foto...**, pilih file JPG atau PNG, dan pratinjau akan tampil. Klik **Hapus foto** untuk membatalkan. Foto otomatis diperkecil, dan file di atas 2 MB setelah diperkecil ditolak.
 3. Klik **Kirim laporan**. Akan muncul pesan *Laporan berhasil dikirim dan menunggu review admin*.
+
 
 Laporan baru berstatus **menunggu review** dan belum tampil di pencarian publik sampai admin menyetujuinya.
 
@@ -91,6 +94,7 @@ Laporan baru berstatus **menunggu review** dan belum tampil di pencarian publik 
 1. Buka tab **Laporan Saya**. Klik **Muat ulang** untuk menyegarkan daftar.
 2. Klik dua kali sebuah laporan untuk melihat detail dan statusnya. Jika laporan ditolak, alasan penolakan ditampilkan.
 3. Untuk membatalkan laporan, klik **Batalkan laporan** pada jendela detail lalu konfirmasi.
+4. Foto yang Anda unggah ikut tampil di jendela detail.
 
 ## 4. Aplikasi Desktop untuk Admin
 
@@ -103,6 +107,7 @@ Masuk dengan email `admin@foundit.local` dan password sesuai `AdminPassword` di 
 3. Pilih tindakan:
    - **Setujui**: laporan menjadi listing aktif dan muncul di pencarian publik.
    - **Tolak**: isi **Alasan penolakan** terlebih dahulu (wajib), lalu klik **Tolak**. Pelapor dapat melihat alasannya di *Laporan Saya*.
+4. Tabel review menampilkan kolom **Pelapor**, dan jendela review menampilkan foto barang sehingga admin dapat memeriksanya sebelum menyetujui.
 
 Tindakan yang sama juga tersedia langsung di tab melalui tombol **Setujui** dan **Tolak** setelah memilih laporan.
 
@@ -164,6 +169,9 @@ Nilai `type` adalah `Lost` atau `Found`. Respons sukses: `201 Created` dengan st
 
 Catatan: pada mode data sementara, ID kategori berubah setiap Web API dijalankan ulang, jadi ambil ulang dari `/api/categories`.
 
+# Foto listing (simpan ke file)
+curl http://localhost:5000/api/listings/ID_LISTING/image -o foto.jpg
+
 ## 6. Pemecahan Masalah
 
 | Masalah | Penyebab dan solusi |
@@ -177,3 +185,6 @@ Catatan: pada mode data sementara, ID kategori berubah setiap Web API dijalankan
 | API `400 Bad Request` saat kirim laporan | `categoryId` harus GUID asli dari `/api/categories`; judul 3–120 karakter; deskripsi minimal 10 karakter; tanggal tidak lebih dari besok. |
 | API `401 Unauthorized` | Akun belum terdaftar atau header Basic Auth salah. |
 | Peringatan SmartScreen | Klik **More info → Run anyway**. |
+| File tidak dapat dibuka sebagai gambar | File yang dipilih bukan JPG/PNG yang valid. Pilih file gambar lain. |
+| Ukuran gambar maksimal 2 MB | Terjadi pada API jika imageData terlalu besar. Aplikasi Desktop memperkecil foto otomatis. |
+| File harus berupa gambar PNG atau JPG | Isi file bukan gambar (ekstensi saja tidak cukup). Pakai file JPG/PNG asli. |

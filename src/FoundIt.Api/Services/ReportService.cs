@@ -44,6 +44,14 @@ public sealed class ReportService(IReportRepository reports)
             throw new ArgumentException("Incident date cannot be more than one day in the future.");
         }
 
+        const int maxImageBytes = 2 * 1024 * 1024;
+        if (request.ImageData is { Length: > maxImageBytes }) {
+            throw new ArgumentException("Ukuran gambar maksimal 2 MB.");
+        }
+        if (request.ImageData is { Length: > 0 } && !LooksLikeImage(request.ImageData)) {
+            throw new ArgumentException("File harus berupa gambar PNG atau JPG.");
+        }
+
         var report = new Report
         {
             Id = Guid.NewGuid(),
@@ -52,9 +60,10 @@ public sealed class ReportService(IReportRepository reports)
             Type = request.Type,
             Title = request.Title.Trim(),
             Description = request.Description.Trim(),
+            ImageUrl = request.ImageUrl,
+            ImageData = request.ImageData is { Length: > 0 } ? request.ImageData : null,
             Location = request.Location.Trim(),
             IncidentDate = request.IncidentDate,
-            ImageUrl = request.ImageUrl,
             Status = ReportStatus.Pending,
             CreatedAtUtc = nowUtc,
             UpdatedAtUtc = nowUtc
@@ -63,4 +72,10 @@ public sealed class ReportService(IReportRepository reports)
         await reports.AddAsync(report, cancellationToken);
         return report;
     }
+
+    // Cek tanda pengenal file (bukan ekstensi): PNG = 89 50 4E 47, JPEG = FF D8 FF
+    private static bool LooksLikeImage(byte[] d) =>
+        d.Length > 4 &&
+        ((d[0] == 0x89 && d[1] == 0x50 && d[2] == 0x4E && d[3] == 0x47) ||
+         (d[0] == 0xFF && d[1] == 0xD8 && d[2] == 0xFF));
 }

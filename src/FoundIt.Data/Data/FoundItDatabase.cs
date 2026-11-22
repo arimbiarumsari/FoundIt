@@ -12,7 +12,7 @@ public sealed class FoundItDatabase
 {
     private const string ReportColumns =
         "id, user_id, category_id, type, title, description, location, incident_date, " +
-        "image_url, status, rejection_reason, reviewed_by, reviewed_at, created_at, updated_at";
+        "image_url, status, rejection_reason, reviewed_by, reviewed_at, created_at, updated_at, image_data";
 
     private readonly string _connectionString;
 
@@ -183,7 +183,7 @@ public sealed class FoundItDatabase
         using var command = new NpgsqlCommand(
             "INSERT INTO reports (" + ReportColumns + ") VALUES (" +
             "@id, @user_id, @category_id, @type, @title, @description, @location, @incident_date, " +
-            "@image_url, @status, @rejection_reason, @reviewed_by, @reviewed_at, @created_at, @updated_at)",
+            "@image_url, @status, @rejection_reason, @reviewed_by, @reviewed_at, @created_at, @updated_at, @image_data)",
             connection);
         BindReport(command, report, includeImmutable: true);
         command.ExecuteNonQuery();
@@ -300,6 +300,7 @@ public sealed class FoundItDatabase
             Add(command, "category_id", NpgsqlDbType.Uuid, report.CategoryId);
             Add(command, "type", NpgsqlDbType.Varchar, report.Type.ToString());
             Add(command, "created_at", NpgsqlDbType.TimestampTz, report.CreatedAtUtc.UtcDateTime);
+            Add(command, "image_data", NpgsqlDbType.Bytea, report.ImageData);
         }
 
         Add(command, "title", NpgsqlDbType.Varchar, report.Title);
@@ -331,7 +332,8 @@ public sealed class FoundItDatabase
         ReviewedByUserId = reader.IsDBNull(11) ? null : reader.GetGuid(11).ToString(),
         ReviewedAtUtc = reader.IsDBNull(12) ? null : ReadTime(reader, 12),
         CreatedAtUtc = ReadTime(reader, 13),
-        UpdatedAtUtc = ReadTime(reader, 14)
+        UpdatedAtUtc = ReadTime(reader, 14),
+        ImageData = reader.IsDBNull(15) ? null : reader.GetFieldValue<byte[]>(15)
     };
 
     private static DateTimeOffset ReadTime(NpgsqlDataReader reader, int index) =>

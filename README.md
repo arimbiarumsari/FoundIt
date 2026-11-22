@@ -19,11 +19,14 @@ Aplikasi *Lost & Found* untuk mencari dan melaporkan barang hilang atau ditemuka
 - Melihat, membuka detail, dan membatalkan laporan milik sendiri
 - Panel admin: menyetujui atau menolak laporan (dengan alasan), mengubah status dan menghapus listing
 - Penyimpanan ke **PostgreSQL** (opsional). Tanpa database, aplikasi memakai data sementara di memori
+- Unggah foto barang (JPG/PNG, opsional) saat mengirim laporan. Foto otomatis diperkecil dan disimpan di database
+- Nama pelapor tampil di tabel dan detail listing; foto tampil di detail listing, detail laporan, dan jendela review admin
 
 **Web API**
 - Mencari dan melihat listing, melihat kategori dan statistik
 - Registrasi akun, mengirim laporan, dan melihat laporan sendiri lewat HTTP
 - Dokumentasi interaktif dengan Swagger di `/swagger`
+- Mengambil foto listing (`/api/listings/{id}/image`) dan mengirim foto saat membuat laporan (base64)
 
 ## Unduh dan Jalankan (paling cepat)
 
@@ -65,6 +68,7 @@ Alternatifnya, pengaturan dapat diberikan lewat environment variable `FOUNDIT_DB
 3. Setelah login, header aplikasi menampilkan **PostgreSQL**. Jika tertulis *Data sementara*, koneksi belum terpakai.
 
 Skema tabel tersedia di [`database/schema.sql`](database/schema.sql) sebagai referensi.
+Jika Anda sudah memakai database FoundIt versi sebelumnya, kolom foto (`image_data`) ditambahkan otomatis saat aplikasi dijalankan. Data lama tidak hilang.
 
 > Akun demo (`AdminPassword` di atas) hanya untuk keperluan penilaian. Jangan memakai password asli di repositori publik.
 
@@ -82,6 +86,9 @@ Jika port 5000 sedang dipakai: `FoundIt.WebApi.exe --urls http://localhost:5050`
 | POST | `/api/auth/register` | – | Daftar akun baru |
 | POST | `/api/reports` | Basic Auth | Kirim laporan barang |
 | GET | `/api/reports/mine` | Basic Auth | Laporan milik saya |
+| GET | `/api/listings/{id}/image` | – | Foto listing (JPEG/PNG) |
+
+Respons listing memuat `reportedBy` (nama pelapor) dan `hasImage`. Pada `POST /api/reports`, foto dikirim lewat field opsional `imageData` berisi string base64 (JPG/PNG, maksimal 2 MB).
 
 Basic Auth memakai header `Authorization: Basic base64(email:password)`.
 
@@ -153,9 +160,11 @@ dotnet publish src\FoundIt.Desktop -c Release -r win-x64 --self-contained true -
 dotnet publish src\FoundIt.WebApi  -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish\FoundIt-WebApi
 ```
 
-Detail lebih lanjut ada di [docs/CARA_MENJALANKAN.md](docs/CARA_MENJALANKAN.md).
+Detail lebih lanjut ada di [CARA_MENJALANKAN.md](CARA_MENJALANKAN.md).
 
 ## Keterbatasan yang Diketahui
 
 - Data dimuat ke memori saat aplikasi dimulai. Jika Desktop dan Web API berjalan bersamaan pada database yang sama, perubahan di salah satunya tidak otomatis muncul di yang lain sebelum dijalankan ulang.
 - Web API memakai HTTP Basic Auth sederhana (cocok untuk demo, belum memakai token/JWT).
+- Satu laporan hanya dapat memiliki satu foto (maksimal 2 MB setelah diperkecil), disimpan langsung di database.
+- Nama pelapor terlihat oleh semua pengguna yang membuka listing.

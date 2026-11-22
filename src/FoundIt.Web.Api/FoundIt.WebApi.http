@@ -24,3 +24,19 @@ Authorization: Basic YnVkaUBleGFtcGxlLmNvbTpQYXNzdzByZDE=
 ### Laporan saya
 GET {{baseUrl}}/api/reports/mine
 Authorization: Basic YnVkaUBleGFtcGxlLmNvbTpQYXNzdzByZDE=
+
+### Kirim laporan dengan foto (PNG 1x1 sebagai contoh)
+POST {{baseUrl}}/api/reports
+Content-Type: application/json
+Authorization: Basic YnVkaUBleGFtcGxlLmNvbTpQYXNzdzByZDE=
+
+{
+  "categoryId": "ISI_DENGAN_ID_DARI_/api/categories",
+  "type": "Found",
+  "title": "Payung biru",
+  "description": "Payung biru ditemukan di dekat perpustakaan.",
+  "location": "Perpustakaan",
+  "incidentDate": "2026-11-21",
+  "imageUrl": null,
+  "imageData": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+}

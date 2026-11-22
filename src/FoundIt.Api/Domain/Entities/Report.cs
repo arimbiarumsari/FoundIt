@@ -13,6 +13,7 @@ public sealed class Report
     public required string Location { get; set; }
     public DateOnly IncidentDate { get; set; }
     public string? ImageUrl { get; set; }
+    public byte[]? ImageData { get; set; }
     public ReportStatus Status { get; set; }
     public string? RejectionReason { get; set; }
     public string? ReviewedByUserId { get; set; }

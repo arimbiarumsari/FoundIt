@@ -10,4 +10,5 @@ public sealed record CreateReportRequest(
     [property: Required, StringLength(2_000, MinimumLength = 10)] string Description,
     [property: Required, StringLength(200)] string Location,
     [property: Required] DateOnly IncidentDate,
-    [property: Url, StringLength(500)] string? ImageUrl);
+    [property: Url, StringLength(500)] string? ImageUrl,
+    byte[]? ImageData = null);

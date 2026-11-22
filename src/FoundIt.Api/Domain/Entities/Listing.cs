@@ -19,6 +19,7 @@ public sealed class Listing
     public string Location => Report.Location;
     public DateOnly IncidentDate => Report.IncidentDate;
     public string? ImageUrl => Report.ImageUrl;
+    public byte[]? ImageData => Report.ImageData;
 
     public static Listing Publish(Report report, Category category, DateTimeOffset nowUtc)
     {

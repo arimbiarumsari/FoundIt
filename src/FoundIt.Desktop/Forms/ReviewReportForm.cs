@@ -29,6 +29,7 @@ public sealed class ReviewReportForm : Form
         FormKit.AddRow(body, "Lokasi kejadian", report.Location, width);
         FormKit.AddRow(body, "Tanggal kejadian", report.IncidentDate.ToString("dd MMM yyyy"), width);
         FormKit.AddRow(body, "Deskripsi", report.Description, width);
+        FormKit.AddPicture(body, report.ImageData, width);
         FormKit.AddRow(body, "Dikirim",
             report.CreatedAtUtc.ToLocalTime().ToString("dd MMM yyyy HH:mm"), width);
         FormKit.AddRow(body, "Alasan penolakan", "", width);

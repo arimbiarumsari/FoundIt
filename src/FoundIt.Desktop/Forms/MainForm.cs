@@ -7,6 +7,14 @@ namespace FoundIt.Desktop.Forms;
 
 public sealed class MainForm : Form
 {
+    private readonly PictureBox _preview = new() {
+        Width = 240,
+        Height = 160,
+        SizeMode = PictureBoxSizeMode.Zoom,
+        BorderStyle = BorderStyle.FixedSingle,
+        BackColor = Color.White
+    };
+    private byte[]? _imageData;
     private readonly InMemoryAppStore _store;
     private readonly User _currentUser;
     private readonly DataGridView _listingGrid = UiTheme.Grid();
@@ -153,10 +161,34 @@ public sealed class MainForm : Form
         AddField(form, "Lokasi kejadian", _location);
         AddField(form, "Tanggal kejadian", _incidentDate);
 
+        var choose = UiTheme.Button("Pilih foto...", false);
+        choose.Click += (_, _) => ChooseImage();
+        var remove = UiTheme.Button("Hapus foto", false);
+        remove.Click += (_, _) => ClearImage();
+        var imageButtons = new FlowLayoutPanel { AutoSize = true, FlowDirection = FlowDirection.LeftToRight };
+        imageButtons.Controls.Add(choose);
+        imageButtons.Controls.Add(remove);
+        var photoPanel = new FlowLayoutPanel {
+            Dock = DockStyle.Left,
+            Width = 320,
+            FlowDirection = FlowDirection.TopDown,
+            WrapContents = false,
+            Padding = new Padding(0, 90, 0, 0)     // atur angka ini agar sejajar dengan form di kiri
+        };
+        photoPanel.Controls.Add(new Label {
+            Text = "Foto barang (opsional)",
+            AutoSize = true,
+            Font = new Font("Segoe UI", 10, FontStyle.Bold),
+            Margin = new Padding(0, 8, 0, 5)
+        });
+        photoPanel.Controls.Add(imageButtons);
+        photoPanel.Controls.Add(_preview);
+
         var submit = UiTheme.Button("Kirim laporan");
         submit.Margin = new Padding(0, 22, 0, 0);
         submit.Click += SubmitReport_Click;
         form.Controls.Add(submit);
+        page.Controls.Add(photoPanel);
         page.Controls.Add(form);
         return page;
     }
@@ -204,7 +236,8 @@ public sealed class MainForm : Form
                 _description.Text,
                 _location.Text,
                 DateOnly.FromDateTime(_incidentDate.Value),
-                null);
+                null,
+                _imageData);
 
             await _store.SubmitReportAsync(_currentUser, request);
             MessageBox.Show("Laporan berhasil dikirim dan menunggu review admin.",
@@ -212,6 +245,7 @@ public sealed class MainForm : Form
             _title.Clear();
             _description.Clear();
             _location.Clear();
+            ClearImage();
             RefreshAllData();
         }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
@@ -259,7 +293,7 @@ public sealed class MainForm : Form
         var listing = _store.GetListing(id);
         if (listing is null) return;
 
-        using var form = new ListingDetailForm(listing);
+        using var form = new ListingDetailForm(_store, listing);
         form.ShowDialog(this);
     }
 
@@ -299,6 +333,7 @@ public sealed class MainForm : Form
         {
             listing.Id,
             Jenis = listing.Report.Type,
+            Pelapor = _store.GetUserName(listing.Report.UserId),
             listing.Title,
             Kategori = listing.Category.Name,
             listing.Location,
@@ -330,6 +365,7 @@ public sealed class MainForm : Form
         {
             report.Id,
             Jenis = report.Type,
+            Pelapor = _store.GetUserName(report.UserId),  
             report.Title,
             report.Description,
             report.Location,
@@ -359,5 +395,28 @@ public sealed class MainForm : Form
     private static void HideIdColumn(DataGridView grid)
     {
         if (grid.Columns.Contains("Id")) grid.Columns["Id"].Visible = false;
+    }
+
+    private void ChooseImage() {
+        using var dialog = new OpenFileDialog {
+            Title = "Pilih foto barang",
+            Filter = "Gambar (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png"
+        };
+        if (dialog.ShowDialog(this) != DialogResult.OK) return;
+
+        try {
+            _imageData = ImageHelper.PrepareForUpload(dialog.FileName);
+            _preview.Image = ImageHelper.FromBytes(_imageData);
+        }
+        catch (Exception exception) when (exception is IOException or OutOfMemoryException or ArgumentException) {
+            // OutOfMemoryException = file bukan gambar yang valid (perilaku bawaan System.Drawing)
+            MessageBox.Show("File tidak dapat dibuka sebagai gambar.\n\n" + exception.Message,
+                "Gambar tidak valid", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    private void ClearImage() {
+        _imageData = null;
+        _preview.Image = null;
     }
 }

@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS reports (
     location         varchar(200) NOT NULL,
     incident_date    date         NOT NULL,
     image_url        varchar(500),
+    image_data       bytea,
     status           varchar(20)  NOT NULL DEFAULT 'Pending'
                      CHECK (status IN ('Pending', 'Approved', 'Rejected', 'Cancelled')),
     rejection_reason text,
@@ -55,3 +56,5 @@ CREATE TABLE IF NOT EXISTS listings (
 );
 
 CREATE INDEX IF NOT EXISTS ix_listings_status ON listings (status);
+
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS image_data bytea;

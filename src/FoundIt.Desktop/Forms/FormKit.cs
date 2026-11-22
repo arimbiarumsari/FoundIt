@@ -5,6 +5,19 @@ namespace FoundIt.Desktop.Forms;
 // Helper kecil untuk form dialog (detail, review, kelola) supaya tampilannya seragam.
 internal static class FormKit
 {
+    public static void AddPicture(FlowLayoutPanel body, byte[]? data, int width) {
+        var image = ImageHelper.FromBytes(data);
+        if (image is null) return;
+
+        body.Controls.Add(new PictureBox {
+            Image = image,
+            SizeMode = PictureBoxSizeMode.Zoom,
+            Width = width,
+            Height = 260,
+            BorderStyle = BorderStyle.FixedSingle,
+            Margin = new Padding(0, 6, 0, 6)
+        });
+    }
     public static void Setup(Form form, string title, int width, int height)
     {
         form.Text = title;
